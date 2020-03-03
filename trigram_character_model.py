@@ -3,7 +3,7 @@ import re
 
 
 def read_training_set():
-    fobj = open("training set.txt", "r")
+    fobj = open("training_set.txt", "r")
     lines = fobj.readlines()
     word_exp = re.compile(' [\w\'\.\*]+ ')
     number_exp = re.compile('[0-9]+')
