@@ -4,6 +4,7 @@ import re
 import sys
 from os import path
 
+
 class StupidBackOffTrigramModel:
 
     def __init__(self, trigram_dict, total_trigrams, bigram_dict, total_bigrams,
@@ -81,7 +82,7 @@ class StupidBackOffTrigramModel:
         for word in word_list:
             print("Input word:", word)
             self.print_word_results(word)
-
+            print("\n")
 
 def create_model_from_training_set():
     print("Creating trigram model...")
@@ -145,11 +146,11 @@ def create_model_from_training_set():
             total_unigrams += count
             k += 1
 
-    print("total trigrams: ", total_trigrams)
-    print("total bigrams: ", total_bigrams)
-    print("total unigrams: ", total_unigrams)
+    # print("total trigrams: ", total_trigrams)
+    # print("total bigrams: ", total_bigrams)
+    # print("total unigrams: ", total_unigrams)
     fobj.close()
-    print("Model complete!")
+    print("Model complete!\n")
     return StupidBackOffTrigramModel(trigram_dict, total_trigrams, bigram_dict,
                                      total_bigrams, unigram_dict, total_unigrams, charset)
 
@@ -159,7 +160,8 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         sb_trigram_model.print_results_for_word_list(sys.argv[1:])
     else:
-        input_words = input("Enter a one or more words separated by a space to see the trigram model output:\n")
-        word_list = input_words.split(" ")
+        # input_words = input("Enter a one or more words separated by a space to see the trigram model output:\n")
+        # word_list = input_words.split(" ")
+        word_list = ["hello", "weather", "mystique", "catcher"]
         sb_trigram_model.print_results_for_word_list(word_list)
 
