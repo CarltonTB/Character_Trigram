@@ -1,8 +1,66 @@
 # Author: Carlton Brady
+# CISC689 HW1 Q3
 import re
 
 
-def read_training_set():
+class StupidBackOffTrigramModel:
+
+    def __init__(self, trigram_dict, total_trigrams, bigram_dict, total_bigrams,
+                 unigram_dict, total_unigrams, charset):
+        self.trigram_dict = trigram_dict
+        self.total_trigrams = total_trigrams
+        self.bigram_dict = bigram_dict
+        self.total_bigrams = total_bigrams
+        self.unigram_dict = unigram_dict
+        self.total_unigrams = total_unigrams
+        self.charset = charset
+
+    def get_next_char_probability(self, prev_chars, next_char):
+        if len(prev_chars) != 2:
+            print("Error: please only provide the previous 2 characters")
+            return
+        else:
+            # calculate trigram probability
+            trigram_count = self.trigram_dict.get(prev_chars + next_char)
+            if trigram_count is not None:
+                probability = trigram_count / self.total_trigrams
+            else:
+                # backoff to bigram
+                bigram_count = self.bigram_dict.get(prev_chars[len(prev_chars)-1] + next_char)
+                if bigram_count is not None:
+                    probability = 0.4 * (bigram_count / self.total_bigrams)
+                else:
+                    # backoff to unigram
+                    unigram_count = self.unigram_dict.get(next_char)
+                    if unigram_count is not None:
+                        probability = 0.4 * 0.4 * (unigram_count / self.total_unigrams)
+                    else:
+                        print("Error: character not found in the model")
+                        return
+
+            return probability
+
+    def get_probabilities_for_all_possible_next_chars(self, prev_chars):
+        probabilities_dict = {}
+        for char in self.charset:
+            probabilities_dict.update({char: self.get_next_char_probability(prev_chars, char)})
+        return probabilities_dict
+
+    def get_next_char_ranks_and_probabilities(self, prev_chars):
+        next_char_probs = self.get_probabilities_for_all_possible_next_chars(prev_chars)
+        probs_dict_copy = next_char_probs.copy()
+        rank_order = []
+        while len(probs_dict_copy) != 0:
+            top_char = max(probs_dict_copy, key=probs_dict_copy.get)
+            rank_order.append(top_char)
+            probs_dict_copy.pop(top_char)
+        return rank_order, next_char_probs
+
+    # def get_top_next_char_ranks(self, trigram):
+
+
+def create_model_from_training_set():
+    print("Creating trigram model...")
     fobj = open("training_set.txt", "r")
     lines = fobj.readlines()
     word_exp = re.compile(' [\w\'\.\*]+ ')
@@ -22,9 +80,9 @@ def read_training_set():
         word_match = word_exp.search(line)
         count_match = number_exp.search(line)
         word = str(word_match.group())
-        print(word)
         count = int(count_match.group())
-        print(count)
+        # print(word)
+        # print(count)
 
         # Update trigram dict
         i = 0
@@ -60,14 +118,24 @@ def read_training_set():
             total_unigrams += count
             k += 1
 
-    print(total_trigrams)
-    print(total_bigrams)
-    print(total_unigrams)
+    print("total trigrams: ", total_trigrams)
+    print("total bigrams: ", total_bigrams)
+    print("total unigrams: ", total_unigrams)
     fobj.close()
-    return trigram_dict, total_trigrams, charset
+    print("Model complete!")
+    return StupidBackOffTrigramModel(trigram_dict, total_trigrams, bigram_dict,
+                                     total_bigrams, unigram_dict, total_unigrams, charset)
 
 
-trigram_dict, total_trigrams, charset = read_training_set()
+sb_trigram_model = create_model_from_training_set()
+ranks, next_char_probs = sb_trigram_model.get_next_char_ranks_and_probabilities("ab")
+print(ranks)
+for char in ranks:
+    print(next_char_probs.get(char))
+
+
+
+
 
 
 
