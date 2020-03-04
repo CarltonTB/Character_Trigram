@@ -2,7 +2,7 @@
 # CISC689 HW1 Q3
 import re
 import sys
-
+from os import path
 
 class StupidBackOffTrigramModel:
 
@@ -85,7 +85,10 @@ class StupidBackOffTrigramModel:
 
 def create_model_from_training_set():
     print("Creating trigram model...")
-    fobj = open("trigram/training_set.txt", "r")
+    if path.exists("training_set.txt"):
+        fobj = open("training_set.txt", "r")
+    else:
+        fobj = open("trigram/training_set.txt", "r")
     lines = fobj.readlines()
     word_exp = re.compile(' [\w\'\.\*]+ ')
     number_exp = re.compile('[0-9]+')
