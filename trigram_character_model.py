@@ -56,7 +56,18 @@ class StupidBackOffTrigramModel:
             probs_dict_copy.pop(top_char)
         return rank_order, next_char_probs
 
-    # def get_top_next_char_ranks(self, trigram):
+    def print_top_next_char_ranks(self, trigram):
+        if len(trigram) != 3:
+            print("Error: trigram input must be 3 characters long")
+            return
+        ranks, next_char_probs = self.get_next_char_ranks_and_probabilities(trigram[:2])
+        print("Top 3 most likely next characters for bigram " + "'" + trigram[:2] + "':")
+        i = 0
+        while i < 3:
+            print(str(i + 1) + ". ", "'" + ranks[i] + "'" + ", probability=" + str(next_char_probs.get(ranks[i])))
+            i += 1
+        print("Actual next character:", "'" + trigram[len(trigram)-1] + "'" + ", rank=" + str(ranks.index(trigram[len(trigram)-1])+1) + ",",
+              "probability=" + str(next_char_probs.get(trigram[len(trigram)-1])))
 
 
 def create_model_from_training_set():
@@ -128,10 +139,11 @@ def create_model_from_training_set():
 
 
 sb_trigram_model = create_model_from_training_set()
-ranks, next_char_probs = sb_trigram_model.get_next_char_ranks_and_probabilities("ab")
-print(ranks)
-for char in ranks:
-    print(next_char_probs.get(char))
+sb_trigram_model.print_top_next_char_ranks("abs")
+# ranks, next_char_probs = sb_trigram_model.get_next_char_ranks_and_probabilities("ab")
+# print(ranks)
+# for char in ranks:
+#     print(next_char_probs.get(char))
 
 
 
