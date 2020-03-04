@@ -1,6 +1,7 @@
-# Author: Carlton Brady
+# Author: Carlton Brady (solo)
 # CISC689 HW1 Q3
 import re
+import sys
 
 
 class StupidBackOffTrigramModel:
@@ -70,14 +71,16 @@ class StupidBackOffTrigramModel:
               str(ranks.index(trigram[len(trigram)-1])+1) + ",", "probability=" + str(next_char_probs.get(trigram[len(trigram)-1])))
 
     def print_word_results(self, word):
-        if len(word) < 3:
-            print("word too short, does not contain any trigrams")
-            return
-
+        word = " " + word + " "
         i = 0
         while i < len(word)-2:
             self.print_top_next_char_ranks(word[i]+word[i+1]+word[i+2])
             i += 1
+
+    def print_results_for_word_list(self, word_list):
+        for word in word_list:
+            print("Input word:", word)
+            self.print_word_results(word)
 
 
 def create_model_from_training_set():
@@ -148,14 +151,12 @@ def create_model_from_training_set():
                                      total_bigrams, unigram_dict, total_unigrams, charset)
 
 
-sb_trigram_model = create_model_from_training_set()
-# sb_trigram_model.print_top_next_char_ranks(" ab")
-sb_trigram_model.print_word_results(" hello ")
-# ranks, next_char_probs = sb_trigram_model.get_next_char_ranks_and_probabilities("ab")
-# print(ranks)
-# for char in ranks:
-#     print(next_char_probs.get(char))
-
 if __name__ == "__main__":
-    print("hello world")
+    sb_trigram_model = create_model_from_training_set()
+    if len(sys.argv) > 1:
+        sb_trigram_model.print_results_for_word_list(sys.argv[1:])
+    else:
+        input_words = input("Enter a one or more words separated by a space to see the trigram model output:\n")
+        word_list = input_words.split(" ")
+        sb_trigram_model.print_results_for_word_list(word_list)
 
