@@ -85,7 +85,7 @@ class StupidBackOffTrigramModel:
 
 def create_model_from_training_set():
     print("Creating trigram model...")
-    fobj = open("training_set.txt", "r")
+    fobj = open("trigram/training_set.txt", "r")
     lines = fobj.readlines()
     word_exp = re.compile(' [\w\'\.\*]+ ')
     number_exp = re.compile('[0-9]+')
