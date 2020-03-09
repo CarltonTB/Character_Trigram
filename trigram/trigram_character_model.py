@@ -84,6 +84,7 @@ class StupidBackOffTrigramModel:
             self.print_word_results(word)
             print("\n")
 
+
 def create_model_from_training_set():
     print("Creating trigram model...")
     if path.exists("training_set.txt"):
