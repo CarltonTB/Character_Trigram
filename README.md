@@ -6,8 +6,8 @@ Note: Answers to the homework questions are in the Carlton_Brady_CISC689_HW1_con
 
 ### Project Structure
 The "sentences" directory contains the code and files for using the python nltk sentence splitter
-and analysing the results (HW1 Q1 and Q2).
-Files:
+and analysing the results (HW1 Q1 and Q2).  
+Files:  
 sentence_splitter_input.txt - the provided text to run the splitter on  
 sentences.txt - the resulting sentences output by the nltk sentence splitter  
 sentence_splitting.py - the script that runs the nltk sentence splitter on the text  
