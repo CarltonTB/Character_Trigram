@@ -5,6 +5,9 @@ import re
 import os
 import csv
 
+GSP_STRING = "Gross State Product"
+NICKNAMES_STRING = "Nicknames"
+
 
 class State:
 
@@ -28,9 +31,9 @@ class StateInfoParser:
 
     def parse_state_info(self):
         for file_name in self.files:
-            self.parse_file(file_name)
+            self.parse_state_file(file_name)
 
-    def parse_file(self, file_name):
+    def parse_state_file(self, file_name):
         fobj = open(file_name)
         lines = fobj.readlines()
         gsp_match_count = 0
@@ -55,16 +58,39 @@ class StateInfoParser:
                     gsp_amount = dollar_amount_match.group()
                     magnitude_match = self.gsp_magnitude_pattern.search(gsp_line)
                     gsp_magnitude = magnitude_match.group()
-                    print(state_name + ":", gsp_amount, gsp_magnitude)
 
             nickname_line_match = self.nickname_line_pattern.search(line)
             if nickname_line_match is not None:
                 nicknames_line = nickname_line_match.group()
                 nicknames_match = self.nickname_value_pattern.findall(nicknames_line)
-                for name in parse_nicknames(nicknames_match):
-                    print(name)
+                nicknames = parse_nicknames(nicknames_match)
 
+            if gsp_magnitude is not None and gsp_amount is not None and nicknames is not None:
+                self.state_info.update({state_name: {GSP_STRING: gsp_amount + " " + gsp_magnitude,
+                                                     NICKNAMES_STRING: nicknames}})
         fobj.close()
+
+    def print_state_info(self):
+        for state in self.state_info.keys():
+            print(state+":")
+            print(GSP_STRING+":", self.state_info.get(state).get(GSP_STRING))
+            print(NICKNAMES_STRING+":", self.state_info.get(state).get(NICKNAMES_STRING))
+
+    def write_state_info_to_file(self):
+        outfile = open("state_info.tsv", "w")
+        tsv_writer = csv.writer(outfile, delimiter="\t")
+        tsv_writer.writerow(["State Name", "Gross State Product", "Nicknames"])
+        for state in self.state_info.keys():
+            nicknames_to_write = ""
+            nicknames_list = self.state_info.get(state).get(NICKNAMES_STRING)
+            gsp = self.state_info.get(state).get(GSP_STRING)
+            for i in range(0, len(nicknames_list)):
+                nicknames_to_write += nicknames_list[i]
+                if i < len(nicknames_list)-1:
+                    nicknames_to_write += ";"
+            tsv_writer.writerow([state, gsp, nicknames_to_write])
+
+        outfile.close()
 
 
 def get_wikipedia_files():
@@ -119,3 +145,5 @@ def parse_nicknames(nicknames_list):
 if __name__ == "__main__":
     parser = StateInfoParser()
     parser.parse_state_info()
+    parser.print_state_info()
+    parser.write_state_info_to_file()
